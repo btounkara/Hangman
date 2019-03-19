@@ -31,3 +31,7 @@
     transform: rotate(360deg);
   }
 }
+
+.word-to-find{
+  letter-spacing: 5px;
+}
