@@ -4,7 +4,12 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import Keyboard from './Keyboard';
 
-const phraseToFind="This is a test";
+const wordsToFind = [
+  'All day i dream about sports',
+  'Nike',
+  'Motorcycle',
+  'One Piece'
+];
 
 const initialState = {
   usedLetters: new Set(),
@@ -16,36 +21,44 @@ class App extends Component {
 
   constructor(props){
     super(props);
-    this.state = {...initialState};
+    this.state = {
+      ...initialState,
+      indexWordToFind : 0
+    };
   }
 
   reset(){
-    this.setState(initialState);
+    this.setState({
+      ...initialState, 
+      indexWordToFind: this.state.indexWordToFind < wordsToFind.length -1 ? this.state.indexWordToFind + 1 : 0
+    });
   }
 
   handleClick(character){
+    const { wordFound, usedLetters, counter, indexWordToFind } = this.state;
+    
     // If the word is not already found
-    if(this.state.wordFound){
+    if(wordFound){
       return;
     }
 
     // Get a new set from the previous state
-    const usedLetters = new Set(this.state.usedLetters.values());
+    const newUsedLetters = new Set(usedLetters.values());
 
     // Add the new character if it's not already in the set
-    let state;
-    if(!usedLetters.has(character)){
-      usedLetters.add(character);
-      state = {
-        usedLetters: usedLetters,
-        wordFound: !computeDisplay(phraseToFind, usedLetters).includes('_')
+    let newState;
+    if(!newUsedLetters.has(character)){
+      newUsedLetters.add(character);
+      newState = {
+        usedLetters: newUsedLetters,
+        wordFound: !computeDisplay(wordsToFind[indexWordToFind], newUsedLetters).includes('_')
       }
     }
 
     // Update the state
     this.setState({
-      ...state,
-      counter: this.state.counter + 1
+      ...newState,
+      counter: counter + 1
     });
   }
 
@@ -54,21 +67,34 @@ class App extends Component {
       <div className="App">
         <div className="container">
           <div className="row justify-content-center">
-            <span className="word-to-find">{computeDisplay(phraseToFind, this.state.usedLetters)}</span>
+            <span className="word-to-find">
+              {computeDisplay(wordsToFind[this.state.indexWordToFind], this.state.usedLetters)}
+            </span>
           </div>
           <div className="row mt-1 justify-content-center">
-            <span>Counter : {this.state.counter + (this.state.wordFound ? ' Trouvé' : '')}</span>
+            <span>Letters tried : {this.state.counter}</span>
           </div>
           <div className="row mt-2 justify-content-center">
-            <Keyboard onClick={(character) => this.handleClick(character)}/>
+            <Keyboard 
+              onClick={(character) => this.handleClick(character)}
+              usedLetters={this.state.usedLetters}
+            />
           </div>
+          
+          {this.state.wordFound && 
+            <div className="mt-2">
+              <button type="button" 
+                className="btn btn-outline-primary"
+                onClick={() => this.reset()}
+              >
+                Play again
+              </button>
+            </div>}
         </div>
       </div>
     );
   }
 }
-
-// TODO : Add PropTypes
 
 /**
  * Display the mask for the word to find
@@ -76,6 +102,10 @@ class App extends Component {
  * @param {the letter already tried} usedLetters 
  */
 function computeDisplay(phrase, usedLetters) {
+  if(!usedLetters){
+    return phrase;
+  }
+
   return phrase.toUpperCase().replace(/\w/g,
     (letter) => (usedLetters.has(letter) ? letter : '_')
   )
