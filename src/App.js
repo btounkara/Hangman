@@ -149,13 +149,17 @@ class App extends Component {
           
           <div className="row mt-2 justify-content-center">
             <span className="word-to-find">
-              {computeDisplay(wordsToFind[indexWordToFind], usedLetters)}
+              { 
+                lost 
+                ? wordsToFind[indexWordToFind].toUpperCase()
+                : computeDisplay(wordsToFind[indexWordToFind], usedLetters)
+              }
             </span>
           </div>
           
           <div className="row mt-2 justify-content-center">
             <div className="col-sm-3 justify-content-center">
-              <span>Lives : {drawHangmanArray.length - mistakes} / Score : {score}</span>
+              <span>Score : {score}</span>
             </div>
           </div>
 
