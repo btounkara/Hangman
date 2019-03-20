@@ -35,3 +35,7 @@
 .word-to-find{
   letter-spacing: 5px;
 }
+
+canvas {
+  border: black dashed 2px;
+}

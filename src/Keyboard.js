@@ -7,7 +7,8 @@ const secondGroupLetters = ['N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
 
 class Keyboard extends Component{
 
-    renderLetter = (character) => <Letter 
+    renderLetter = (character, index) => <Letter 
+        key={index}
         value={character}
         used={this.letterIsUsed(character)}
         onClick={this.props.onClick}
