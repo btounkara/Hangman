@@ -34,7 +34,7 @@ class App extends Component {
 
   initialState = {
     usedLetters: new Set(),
-    counter: 0,
+    score: 0,
     mistakes: 0,
     wordFound: false
   };
@@ -68,7 +68,7 @@ class App extends Component {
   }
 
   handleClick(character){
-    const { wordFound, usedLetters, counter, indexWordToFind, canvasContext, mistakes} = this.state;
+    const { wordFound, usedLetters, score, indexWordToFind, canvasContext, mistakes} = this.state;
     
     // If the word is not already found
     if(wordFound || mistakes === drawHangmanArray.length){
@@ -80,7 +80,8 @@ class App extends Component {
 
     // Add the new character if it's not already in the set
     let newState;
-    if(!newUsedLetters.has(character)){
+    const hasCharacter = newUsedLetters.has(character);
+    if(!hasCharacter){
       newUsedLetters.add(character);
       // Compute the new state
       newState = {
@@ -89,23 +90,31 @@ class App extends Component {
       }
     }
 
+    let newScore = score;
     // Draw on canvas if it is a mistake
     const isMistake = !containsCharacter(wordsToFind[indexWordToFind], character);
     if(isMistake){
+      // Draw the hangman
       drawHangmanArray[mistakes](canvasContext);
+      
+      newScore -= (hasCharacter ? 2 : 1);
+      // TODO : -1
+      // TODO : if mistake et alreadyIn -2
+    } else if(!hasCharacter){
+      // + 2 when a character is found
+      newScore += 2;
     }
 
     // Update the state
     this.setState({
       ...newState,
       mistakes: isMistake ? mistakes + 1 : mistakes,
-      counter: counter + 1
+      score: newScore
     });
   }
 
   render() {
-
-    const {usedLetters, wordFound, counter, indexWordToFind, mistakes} = this.state;
+    const {usedLetters, wordFound, score, indexWordToFind, mistakes} = this.state;
     const lost = mistakes === drawHangmanArray.length;
 
     let alertClass;
@@ -146,14 +155,17 @@ class App extends Component {
           
           <div className="row mt-2 justify-content-center">
             <div className="col-sm-3 justify-content-center">
-              <span>Lives : {drawHangmanArray.length - mistakes} / Trials : {counter}</span>
+              <span>Lives : {drawHangmanArray.length - mistakes} / Score : {score}</span>
             </div>
           </div>
 
-          <Keyboard 
-            onClick={(character) => this.handleClick(character)}
-            usedLetters={usedLetters}
-          />
+          {
+            !wordFound && !lost && 
+            <Keyboard 
+              onClick={(character) => this.handleClick(character)}
+              usedLetters={usedLetters}
+            />
+          }  
 
           {
             (wordFound || lost) && 
