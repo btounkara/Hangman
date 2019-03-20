@@ -7,7 +7,9 @@ const wordsToFind = [
   'All day i dream about sports',
   'Nike',
   'Motorcycle',
-  'One Piece'
+  'One Piece',
+  'Canada Love',
+  'Paris'
 ];
 
 const gallows1 = (context) => drawLine(context, 10, 290, 290, 290);
@@ -57,7 +59,8 @@ class App extends Component {
   }
 
   playAgain(){
-    this.state.canvasContext.clearRect(0, 0, 300, 300);
+    this.refs.canvas.width = this.refs.canvas.width;
+
     this.setState({
       ...this.initialState, 
       indexWordToFind: this.state.indexWordToFind < wordsToFind.length -1 ? this.state.indexWordToFind + 1 : 0
@@ -105,47 +108,65 @@ class App extends Component {
     const {usedLetters, wordFound, counter, indexWordToFind, mistakes} = this.state;
     const lost = mistakes === drawHangmanArray.length;
 
+    let alertClass;
+    let msg;
+    if(wordFound){
+      alertClass = 'alert-success';
+      msg = 'You won';
+    } else if(lost){
+      alertClass = 'alert-danger'
+      msg = 'You lost';
+    } else {
+      alertClass = 'alert-secondary';
+      msg = 'Try to find the word';
+    }
+
     return (
       <div className="App">
         <div className="container">
-          <div className="row justify-content-center">
+          {  
+            <div className="row mt-2 justify-content-center">
+                <div className={`alert ${alertClass} mt-2 col-sm-6`} role="alert">
+                  <h2>HANGMAN</h2>
+                  <br/>
+                  {msg}
+                </div>
+            </div>
+          }
+          
+          <div className="row mt-2 justify-content-center">
             <canvas ref="canvas" id="canvas" width="300" height="300" />
           </div>
-          <div className="row justify-content-center">
+          
+          <div className="row mt-2 justify-content-center">
             <span className="word-to-find">
               {computeDisplay(wordsToFind[indexWordToFind], usedLetters)}
             </span>
           </div>
-          <div className="row mt-1 justify-content-center">
-            <div className="col-6 justify-content-center">
-              <span>Lives : {drawHangmanArray.length - mistakes}</span>
-            </div>
-            <div className="col-6 justify-content-center">
-              <span>Trials : {counter}</span>
-            </div>
-          </div>
+          
           <div className="row mt-2 justify-content-center">
-            <Keyboard 
-              onClick={(character) => this.handleClick(character)}
-              usedLetters={usedLetters}
-            />
+            <div className="col-sm-3 justify-content-center">
+              <span>Lives : {drawHangmanArray.length - mistakes} / Trials : {counter}</span>
+            </div>
           </div>
 
-          {
-            lost && <div className="mt-2">You lost</div>
-          }
+          <Keyboard 
+            onClick={(character) => this.handleClick(character)}
+            usedLetters={usedLetters}
+          />
 
           {
             (wordFound || lost) && 
             <div className="mt-2">
               <button type="button" 
-                className="btn btn-outline-primary"
+                className="btn btn-dark"
                 onClick={() => this.playAgain()}
               >
                 Play again
               </button>
             </div>
           }
+
         </div>
       </div>
     );
