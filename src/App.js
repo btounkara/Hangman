@@ -9,7 +9,12 @@ const wordsToFind = [
   'Motorcycle',
   'One Piece',
   'Canada Love',
-  'Paris'
+  'Paris',
+  'Soda', 
+  'Skirts', 
+  'Deodorants',
+  'Softener',
+  'Laptop'
 ];
 
 const gallows1 = (context) => drawLine(context, 10, 290, 290, 290);
