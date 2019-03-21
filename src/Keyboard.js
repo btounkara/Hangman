@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Letter from './Letter';
 import PropTypes from 'prop-types'
 
-const letters = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+const LETTERS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
 
 class Keyboard extends Component{
 
@@ -17,7 +17,7 @@ class Keyboard extends Component{
         return (
             <div className="row mt-2 justify-content-center">
                 <div className="col-sm-6">
-                    {letters.map(this.renderLetter)}
+                    {LETTERS.map(this.renderLetter)}
                 </div>
             </div>
         );

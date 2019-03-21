@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import Keyboard from './Keyboard';
+import Score from './Score';
+import PhraseToFind from './PhraseToFind';
+import BtnPlayAgain from './BtnPlayAgain';
 
 const wordsToFind = [
   'All day i dream about sports',
@@ -17,23 +20,23 @@ const wordsToFind = [
   'Laptop'
 ];
 
-const gallows1 = (context) => drawLine(context, 10, 290, 290, 290);
-const gallows2 = (context) => drawLine(context, 10, 10, 10, 290);
-const gallows3 = (context) => drawLine(context, 10, 10, 200, 10);
-const gallows4 = (context) => drawLine(context, 10, 50, 50, 10);
-const gallows5 = (context) => drawLine(context, 200, 10, 200, 50);
-const head = (context) => {
+const GALLOWS_1 = (context) => drawLine(context, 10, 290, 290, 290);
+const GALLOWS_2 = (context) => drawLine(context, 10, 10, 10, 290);
+const GALLOWS_3 = (context) => drawLine(context, 10, 10, 200, 10);
+const GALLOWS_4 = (context) => drawLine(context, 10, 50, 50, 10);
+const GALLOWS_5 = (context) => drawLine(context, 200, 10, 200, 50);
+const HEAD = (context) => {
 	context.beginPath();
 	context.arc(200, 70, 20, 0, 2 * Math.PI);
 	context.stroke();
 };
-const body = (context) => drawLine(context, 200, 90, 200, 160);
-const leftLeg = (context) => drawLine(context, 200, 160, 180, 190);
-const rightLeg = (context) => drawLine(context, 200, 160, 220, 190);
-const leftArm = (context) => drawLine(context, 200, 120, 180, 140);
-const rightArm = (context) => drawLine(context, 200, 120, 220, 140);
+const BODY = (context) => drawLine(context, 200, 90, 200, 160);
+const LEFT_LEG = (context) => drawLine(context, 200, 160, 180, 190);
+const RIGHT_LEG = (context) => drawLine(context, 200, 160, 220, 190);
+const LEFT_ARM = (context) => drawLine(context, 200, 120, 180, 140);
+const RIGHT_ARM = (context) => drawLine(context, 200, 120, 220, 140);
 
-const drawHangmanArray = [gallows1, gallows2, gallows3, gallows4, gallows5, head, body, leftLeg, rightLeg, leftArm, rightArm];
+const drawHangmanArray = [GALLOWS_1, GALLOWS_2, GALLOWS_3, GALLOWS_4, GALLOWS_5, HEAD, BODY, LEFT_LEG, RIGHT_LEG, LEFT_ARM, RIGHT_ARM];
 
 class App extends Component {
 
@@ -103,8 +106,6 @@ class App extends Component {
       drawHangmanArray[mistakes](canvasContext);
       
       newScore -= (hasCharacter ? 2 : 1);
-      // TODO : -1
-      // TODO : if mistake et alreadyIn -2
     } else if(!hasCharacter){
       // + 2 when a character is found
       newScore += 2;
@@ -135,6 +136,8 @@ class App extends Component {
       msg = 'Try to find the word';
     }
 
+    const phrase =   lost ? wordsToFind[indexWordToFind].toUpperCase() : computeDisplay(wordsToFind[indexWordToFind], usedLetters)
+  
     return (
       <div className="App">
         <div className="container">
@@ -142,7 +145,6 @@ class App extends Component {
             <div className="row mt-2 justify-content-center">
                 <div className={`alert ${alertClass} mt-2 col-sm-6`} role="alert">
                   <h2>HANGMAN</h2>
-                  <br/>
                   {msg}
                 </div>
             </div>
@@ -152,21 +154,9 @@ class App extends Component {
             <canvas ref="canvas" id="canvas" width="300" height="300" />
           </div>
           
-          <div className="row mt-2 justify-content-center">
-            <span className="word-to-find">
-              { 
-                lost 
-                ? wordsToFind[indexWordToFind].toUpperCase()
-                : computeDisplay(wordsToFind[indexWordToFind], usedLetters)
-              }
-            </span>
-          </div>
+          <PhraseToFind value={phrase} />
           
-          <div className="row mt-2 justify-content-center">
-            <div className="col-sm-3 justify-content-center">
-              <span>Score : {score}</span>
-            </div>
-          </div>
+          <Score score={score}/>
 
           {
             !wordFound && !lost && 
@@ -176,17 +166,7 @@ class App extends Component {
             />
           }  
 
-          {
-            (wordFound || lost) && 
-            <div className="mt-2">
-              <button type="button" 
-                className="btn btn-dark"
-                onClick={() => this.playAgain()}
-              >
-                Play again
-              </button>
-            </div>
-          }
+          <BtnPlayAgain display={wordFound || lost} />
 
         </div>
       </div>
