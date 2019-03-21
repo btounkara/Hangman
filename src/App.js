@@ -6,7 +6,7 @@ import Score from './Score';
 import PhraseToFind from './PhraseToFind';
 import BtnPlayAgain from './BtnPlayAgain';
 
-const wordsToFind = [
+const WORDS = [
   'All day i dream about sports',
   'Nike',
   'Motorcycle',
@@ -36,21 +36,21 @@ const RIGHT_LEG = (context) => drawLine(context, 200, 160, 220, 190);
 const LEFT_ARM = (context) => drawLine(context, 200, 120, 180, 140);
 const RIGHT_ARM = (context) => drawLine(context, 200, 120, 220, 140);
 
-const drawHangmanArray = [GALLOWS_1, GALLOWS_2, GALLOWS_3, GALLOWS_4, GALLOWS_5, HEAD, BODY, LEFT_LEG, RIGHT_LEG, LEFT_ARM, RIGHT_ARM];
+const DRAW_HANGMAN_ARRAY = [GALLOWS_1, GALLOWS_2, GALLOWS_3, GALLOWS_4, GALLOWS_5, HEAD, BODY, LEFT_LEG, RIGHT_LEG, LEFT_ARM, RIGHT_ARM];
+
+const INITIAL_STATE = {
+  usedLetters: new Set(),
+  score: 0,
+  mistakes: 0,
+  wordFound: false
+};
 
 class App extends Component {
-
-  initialState = {
-    usedLetters: new Set(),
-    score: 0,
-    mistakes: 0,
-    wordFound: false
-  };
 
   constructor(props){
     super(props);
     this.state = {
-      ...this.initialState,
+      ...INITIAL_STATE,
       indexWordToFind : 0
     };
   }
@@ -70,8 +70,8 @@ class App extends Component {
     this.refs.canvas.width = this.refs.canvas.width;
 
     this.setState({
-      ...this.initialState, 
-      indexWordToFind: this.state.indexWordToFind < wordsToFind.length -1 ? this.state.indexWordToFind + 1 : 0
+      ...INITIAL_STATE, 
+      indexWordToFind: this.state.indexWordToFind < WORDS.length -1 ? this.state.indexWordToFind + 1 : 0
     });
   }
 
@@ -79,7 +79,7 @@ class App extends Component {
     const { wordFound, usedLetters, score, indexWordToFind, canvasContext, mistakes} = this.state;
     
     // If the word is not already found
-    if(wordFound || mistakes === drawHangmanArray.length){
+    if(wordFound || mistakes === DRAW_HANGMAN_ARRAY.length){
       return;
     }
 
@@ -94,16 +94,16 @@ class App extends Component {
       // Compute the new state
       newState = {
         usedLetters: newUsedLetters,
-        wordFound: !computeDisplay(wordsToFind[indexWordToFind], newUsedLetters).includes('_')
+        wordFound: !computeDisplay(WORDS[indexWordToFind], newUsedLetters).includes('_')
       }
     }
 
     let newScore = score;
     // Draw on canvas if it is a mistake
-    const isMistake = !containsCharacter(wordsToFind[indexWordToFind], character);
+    const isMistake = !containsCharacter(WORDS[indexWordToFind], character);
     if(isMistake){
       // Draw the hangman
-      drawHangmanArray[mistakes](canvasContext);
+      DRAW_HANGMAN_ARRAY[mistakes](canvasContext);
       // -1 if first mistake, -2 if not
       newScore -= (hasCharacter ? 2 : 1);
     } else if(!hasCharacter){
@@ -119,8 +119,7 @@ class App extends Component {
     });
   }
 
-  getInfoMsg() {
-    const {wordFound, lost} = this.state;
+  getInfoMsg(wordFound, lost) {
     if(wordFound){
       return {
         alertClass : 'alert-success',
@@ -141,9 +140,9 @@ class App extends Component {
 
   render() {
     const {usedLetters, wordFound, score, indexWordToFind, mistakes} = this.state;
-    const lost = mistakes === drawHangmanArray.length;
-    const {alertClass, msg} = this.getInfoMsg();
-    const phrase = lost ? wordsToFind[indexWordToFind].toUpperCase() : computeDisplay(wordsToFind[indexWordToFind], usedLetters)
+    const lost = mistakes === DRAW_HANGMAN_ARRAY.length;
+    const {alertClass, msg} = this.getInfoMsg(wordFound, lost);
+    const phrase = lost ? WORDS[indexWordToFind].toUpperCase() : computeDisplay(WORDS[indexWordToFind], usedLetters)
   
     return (
       <div className="App">
@@ -187,8 +186,8 @@ class App extends Component {
  * @param {the letter already tried} usedLetters 
  */
 function computeDisplay(phrase, usedLetters) {
-  return phrase.toUpperCase().replace(/\w/g,
-    (letter) => (usedLetters.has(letter) ? letter : '_')
+  console.log(usedLetters);
+  return phrase.toUpperCase().replace(/\w/g, (letter) => (usedLetters.has(letter) ? letter : '_')
   )
 }
 
