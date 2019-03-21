@@ -104,7 +104,7 @@ class App extends Component {
     if(isMistake){
       // Draw the hangman
       drawHangmanArray[mistakes](canvasContext);
-      
+      // -1 if first mistake, -2 if not
       newScore -= (hasCharacter ? 2 : 1);
     } else if(!hasCharacter){
       // + 2 when a character is found
@@ -136,7 +136,7 @@ class App extends Component {
       msg = 'Try to find the word';
     }
 
-    const phrase =   lost ? wordsToFind[indexWordToFind].toUpperCase() : computeDisplay(wordsToFind[indexWordToFind], usedLetters)
+    const phrase = lost ? wordsToFind[indexWordToFind].toUpperCase() : computeDisplay(wordsToFind[indexWordToFind], usedLetters)
   
     return (
       <div className="App">
@@ -166,7 +166,9 @@ class App extends Component {
             />
           }  
 
-          <BtnPlayAgain display={wordFound || lost} />
+          <BtnPlayAgain 
+            display={wordFound || lost}
+            onClick={() => this.playAgain()}/>
 
         </div>
       </div>
