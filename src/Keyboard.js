@@ -15,7 +15,7 @@ class Keyboard extends Component{
 
     render() {
         return (
-            <div className="row mt-2 justify-content-center">
+            this.props.display && <div className="row mt-2 justify-content-center">
                 <div className="col-sm-6">
                     {LETTERS.map(this.renderLetter)}
                 </div>
@@ -30,7 +30,13 @@ class Keyboard extends Component{
 }
 
 Keyboard.propTypes = {
+    display: PropTypes.bool.isRequired,
     onClick: PropTypes.func.isRequired,
     usedLetters: PropTypes.instanceOf(Set).isRequired
 }
+
+Keyboard.defaultProps = {
+    display: true
+}
+
 export default Keyboard;

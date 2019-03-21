@@ -119,23 +119,30 @@ class App extends Component {
     });
   }
 
+  getInfoMsg() {
+    const {wordFound, lost} = this.state;
+    if(wordFound){
+      return {
+        alertClass : 'alert-success',
+        msg : 'You won'
+      };
+    } else if(lost){
+      return {
+        alertClass : 'alert-danger',
+        msg : 'You lost'
+      }
+    } 
+    
+    return {
+      alertClass : 'alert-secondary',
+      msg : 'Try to find the word'
+    }
+  }
+
   render() {
     const {usedLetters, wordFound, score, indexWordToFind, mistakes} = this.state;
     const lost = mistakes === drawHangmanArray.length;
-
-    let alertClass;
-    let msg;
-    if(wordFound){
-      alertClass = 'alert-success';
-      msg = 'You won';
-    } else if(lost){
-      alertClass = 'alert-danger'
-      msg = 'You lost';
-    } else {
-      alertClass = 'alert-secondary';
-      msg = 'Try to find the word';
-    }
-
+    const {alertClass, msg} = this.getInfoMsg();
     const phrase = lost ? wordsToFind[indexWordToFind].toUpperCase() : computeDisplay(wordsToFind[indexWordToFind], usedLetters)
   
     return (
@@ -158,13 +165,11 @@ class App extends Component {
           
           <Score score={score}/>
 
-          {
-            !wordFound && !lost && 
-            <Keyboard 
-              onClick={(character) => this.handleClick(character)}
-              usedLetters={usedLetters}
-            />
-          }  
+          <Keyboard 
+            display={!wordFound && !lost}
+            onClick={(character) => this.handleClick(character)}
+            usedLetters={usedLetters}
+          />
 
           <BtnPlayAgain 
             display={wordFound || lost}
